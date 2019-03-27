@@ -73,9 +73,9 @@ class CompBatMBLayout : FrameLayout {
     private fun setDepthPaint(view: ViewGroup) {
         for (i in 0 until view.childCount) {
             val v = view.getChildAt(i)
-            if (v.translationZ != 0.0f) {
+
                 v.setLayerType(LAYER_TYPE_HARDWARE, createPaint(v.translationZ))
-            }
+
         }
     }
 

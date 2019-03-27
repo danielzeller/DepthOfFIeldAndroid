@@ -146,7 +146,7 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
             surfaceTexture.updateTexture()
             surfaceDepthTexture.updateTexture()
             fullscreenTextureShader.useProgram()
-            fullscreenTextureShader.setUniforms(projectionMatrixOrtho, surfaceTexture.getTextureID(),surfaceDepthTexture.getTextureID(), cutoffFactor)
+            fullscreenTextureShader.setUniforms(projectionMatrixOrtho, surfaceTexture.getTextureID(),surfaceDepthTexture.getTextureID(), cutoffFactor, 1f/width.toFloat(), 1f/height.toFloat())
             spriteMesh.bindData(fullscreenTextureShader)
             spriteMesh.draw()
         }

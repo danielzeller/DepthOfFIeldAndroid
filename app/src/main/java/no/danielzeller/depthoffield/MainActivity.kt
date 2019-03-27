@@ -1,9 +1,6 @@
 package no.danielzeller.depthoffield
 
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -20,5 +17,6 @@ class MainActivity : AppCompatActivity() {
             child.clipToOutline = true
 //            child.setLayerType(View.LAYER_TYPE_HARDWARE, createPaint(child.translationZ))
         }
+        ObjectAnimator.ofFloat(brawski, View.TRANSLATION_Y,0f,500f).setDuration(2000).start()
     }
 }

@@ -103,11 +103,12 @@
             android:layout_width="320dp"
             android:layout_height="320dp"
             android:background="@drawable/corner_background"
-            android:translationZ="-0.000001px"
+            android:translationZ="-0.01px"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/brawski">
 
             <View
                 android:layout_width="match_parent"
