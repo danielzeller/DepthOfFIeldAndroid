@@ -40,7 +40,7 @@ class CompBatMBLayout : FrameLayout {
         if (textureViewRenderer.isCreated) {
             textureViewRenderer.cutoffFactor = getCutoffFactor()
             val glCanvas = textureViewRenderer.surfaceTexture.beginDraw()
-            glCanvas?.drawColor(Color.WHITE, PorterDuff.Mode.CLEAR)
+            glCanvas?.drawColor(Color.WHITE)
             if (glCanvas != null) {
                 val metaBallContainer = getChildAt(1) as ViewGroup
                 setRegPaint(metaBallContainer)
@@ -51,7 +51,7 @@ class CompBatMBLayout : FrameLayout {
 
 
             val glCanvasDepth = textureViewRenderer.surfaceDepthTexture.beginDraw()
-            glCanvasDepth?.drawColor(Color.WHITE)
+            glCanvasDepth?.drawColor(Color.BLACK)
             if (glCanvasDepth != null) {
                 val metaBallContainer = getChildAt(1) as ViewGroup
                 setDepthPaint(metaBallContainer)
@@ -64,23 +64,19 @@ class CompBatMBLayout : FrameLayout {
     private fun setRegPaint(view: ViewGroup) {
         for (i in 0 until view.childCount) {
             val v = view.getChildAt(i)
-            if (v.translationZ != 0.0f) {
-                v.setLayerType(LAYER_TYPE_NONE, null)
-            }
+            v.setLayerType(LAYER_TYPE_NONE, null)
         }
     }
 
     private fun setDepthPaint(view: ViewGroup) {
         for (i in 0 until view.childCount) {
             val v = view.getChildAt(i)
-
-                v.setLayerType(LAYER_TYPE_HARDWARE, createPaint(v.translationZ))
-
+            v.setLayerType(LAYER_TYPE_HARDWARE, createPaint(v.translationZ))
         }
     }
 
     private fun createPaint(depth: Float): Paint {
-        val d = Math.abs(depth)
+        val d = 0.5 + depth / 2f
         val paint = Paint()
         paint.colorFilter = PorterDuffColorFilter(
             Color.argb(

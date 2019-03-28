@@ -27,7 +27,7 @@ class TextureShaderProgram(vertexShaderResourceId: Int, fragmentShaderResourceId
 
     }
 
-    fun setUniforms(matrix: FloatArray, textureId: Int, depthTextureId: Int, cutoffFactor: Float, w: Float, h: Float) {
+    fun setUniforms(matrix: FloatArray, textureId: Int, depthTextureId: Int, w: Float, h: Float) {
 
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
 
@@ -38,6 +38,25 @@ class TextureShaderProgram(vertexShaderResourceId: Int, fragmentShaderResourceId
         glUniform1i(uTextureUnitLocation, 0)
         glUniform1i(uTextureDepthUnitLocation, 1)
         glUniform2f(uSizeLocation, w, h)
-        glUniform1f(uCutoffUnitLocation, cutoffFactor)
+    }
+    fun setUniformsPass2(matrix: FloatArray, textureId: Int, w: Float, h: Float) {
+
+        glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
+        glActiveTexture(GLES30.GL_TEXTURE0)
+        glBindTexture(GLES30.GL_TEXTURE_2D, textureId)
+        glUniform1i(glGetUniformLocation(program, "main_tex"), 0)
+        glUniform2f(uSizeLocation, w, h)
+    }
+
+    fun setUniformsPass3(matrix: FloatArray, textureId: Int, oroginalTextureId: Int) {
+
+        glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
+        glActiveTexture(GLES30.GL_TEXTURE0)
+        glBindTexture(GLES30.GL_TEXTURE_2D, textureId)
+        glUniform1i(glGetUniformLocation(program, "main_tex"), 0)
+
+        glActiveTexture(GLES30.GL_TEXTURE0 + 1)
+        glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, oroginalTextureId)
+        glUniform1i(uTextureUnitLocation, 1)
     }
 }

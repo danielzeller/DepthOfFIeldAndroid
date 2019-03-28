@@ -24,11 +24,15 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
     var cutoffFactor = 0.69f
     var onSurfaceTextureCreated: (() -> Unit)? = null
     var onSurfaceTextureRender: (() -> Unit)? = null
+
     val surfaceTexture = ViewSurfaceTexture()
     val surfaceDepthTexture = ViewSurfaceTexture()
-    private var updateViewUntil = -1L
 
+
+    private var updateViewUntil = -1L
     private lateinit var renderer: RendererThread
+
+    var scale = 0.5f
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {}
 
@@ -49,13 +53,20 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
         updateViewUntil = System.currentTimeMillis() + milliSeconds
     }
 
-    inner class RendererThread(private val surface: SurfaceTexture, private val width: Int, private val height: Int) : Thread() {
+    inner class RendererThread(private val surface: SurfaceTexture, private val width: Int, private val height: Int) :
+        Thread() {
 
         var isStopped = false
         private val projectionMatrixOrtho = FloatArray(16)
         private lateinit var spriteMesh: SpriteMesh
-        private val fullscreenTextureShader = TextureShaderProgram(R.raw.vertex_shader, R.raw.fragment_shader_dof)
+        private val pass1DownsampleAndDepth = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_dof_downscale_pass1)
+        private val pass2Blur = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_shader_dof_blur_pass2)
+        private val pass3FinalComposition =
+            TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_shader_dof_composition_pass3)
+        private var downsampledTexture = RenderTexture()
+        private var downsampledTextureBlurred = RenderTexture()
         private val handler = Handler()
+
 
         override fun run() {
             super.run()
@@ -63,7 +74,12 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
             val eglDisplay = egl.eglGetDisplay(EGL_DEFAULT_DISPLAY)
             egl.eglInitialize(eglDisplay, intArrayOf(0, 0))   // getting OpenGL ES 2
             val eglConfig = chooseEglConfig(egl, eglDisplay)
-            val eglContext = egl.eglCreateContext(eglDisplay, eglConfig, EGL_NO_CONTEXT, intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE))
+            val eglContext = egl.eglCreateContext(
+                eglDisplay,
+                eglConfig,
+                EGL_NO_CONTEXT,
+                intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE)
+            )
             val eglSurface = egl.eglCreateWindowSurface(eglDisplay, eglConfig, surface, null)
 
 
@@ -77,8 +93,7 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
                         onSurfaceCreated()
                         isCreated = true
                     }
-                    onSurfaceTextureRender?.invoke()
-                    renderFullscreenRenderTexture()
+                    doRenderFrame()
                     egl.eglSwapBuffers(eglDisplay, eglSurface)
                 }
                 Thread.sleep((1f / 60f * 1000f).toLong())
@@ -92,14 +107,14 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
         }
 
         private val config = intArrayOf(
-                EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-                EGL_RED_SIZE, 8,
-                EGL_GREEN_SIZE, 8,
-                EGL_BLUE_SIZE, 8,
-                EGL_ALPHA_SIZE, 8,
-                EGL_DEPTH_SIZE, 0,
-                EGL_STENCIL_SIZE, 0,
-                EGL_NONE
+            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+            EGL_RED_SIZE, 8,
+            EGL_GREEN_SIZE, 8,
+            EGL_BLUE_SIZE, 8,
+            EGL_ALPHA_SIZE, 8,
+            EGL_DEPTH_SIZE, 0,
+            EGL_STENCIL_SIZE, 0,
+            EGL_NONE
         )
 
         private fun chooseEglConfig(egl: EGL10, eglDisplay: EGLDisplay): EGLConfig {
@@ -110,7 +125,7 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
         }
 
         private fun onSurfaceCreated() {
-            setupViewPort()
+            setupViewPort(width, height)
             createRenderingObjects()
             clearViewSurfaceTexture()
             handler.post { onSurfaceTextureCreated?.invoke() }
@@ -124,31 +139,90 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
 
         private fun createRenderingObjects() {
             spriteMesh = SpriteMesh()
-            fullscreenTextureShader.load(context)
+            pass1DownsampleAndDepth.load(context)
+            pass2Blur.load(context)
+            pass3FinalComposition.load(context)
             surfaceTexture.createSurface(width, height)
             surfaceDepthTexture.createSurface(width, height)
+            downsampledTexture.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
+            downsampledTextureBlurred.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
         }
 
-        private fun setupViewPort() {
+
+        private fun setupViewPort(width: Int, height: Int) {
             GLES20.glViewport(0, 0, width, height)
             val left = -1.0f
             val right = 1.0f
-            val bottom = 1.0f
-            val top = -1.0f
+            val bottom = 1f
+            val top = -1f
             val near = -1.0f
             val far = 1.0f
-
             Matrix.setIdentityM(projectionMatrixOrtho, 0)
             Matrix.orthoM(projectionMatrixOrtho, 0, left, right, bottom, top, near, far)
         }
 
-        private fun renderFullscreenRenderTexture() {
+        private fun pass1DownsampleAndDepth() {
+            setupViewPort((width.toFloat() * scale).toInt(), (height.toFloat() * scale).toInt())
+            downsampledTexture.bindRenderTexture()
             surfaceTexture.updateTexture()
             surfaceDepthTexture.updateTexture()
-            fullscreenTextureShader.useProgram()
-            fullscreenTextureShader.setUniforms(projectionMatrixOrtho, surfaceTexture.getTextureID(),surfaceDepthTexture.getTextureID(), cutoffFactor, 1f/width.toFloat(), 1f/height.toFloat())
-            spriteMesh.bindData(fullscreenTextureShader)
+            pass1DownsampleAndDepth.useProgram()
+            pass1DownsampleAndDepth.setUniforms(
+                projectionMatrixOrtho,
+                surfaceTexture.getTextureID(),
+                surfaceDepthTexture.getTextureID(),
+                1f / (width.toFloat() * scale),
+                1f / (height.toFloat() * scale)
+            )
+            spriteMesh.bindData(pass1DownsampleAndDepth)
+            spriteMesh.draw()
+            downsampledTexture.unbindRenderTexture()
+        }
+        private fun pass2DownsampleAndDepth() {
+            setupViewPort((width.toFloat() * scale).toInt(), (height.toFloat() * scale).toInt())
+            downsampledTextureBlurred.bindRenderTexture()
+            pass2Blur.useProgram()
+            pass2Blur.setUniformsPass2(
+                projectionMatrixOrtho,
+                downsampledTexture.fboTex,
+                1f / (width.toFloat() * scale),
+                1f / (height.toFloat() * scale)
+            )
+            spriteMesh.bindData(pass2Blur)
+            spriteMesh.draw()
+            downsampledTextureBlurred.unbindRenderTexture()
+        }
+        private fun pass3Composition() {
+            setupViewPort(width, height)
+
+            pass3FinalComposition.useProgram()
+            pass3FinalComposition.setUniformsPass3(projectionMatrixOrtho, downsampledTextureBlurred.fboTex, surfaceTexture.getTextureID())
+            spriteMesh.bindData(pass3FinalComposition)
             spriteMesh.draw()
         }
+
+        private fun doRenderFrame() {
+            onSurfaceTextureRender?.invoke()
+            pass1DownsampleAndDepth()
+            pass2DownsampleAndDepth()
+            pass3Composition()
+        }
+//        private fun renderFullscreenRenderTexture() {
+//            surfaceTexture.updateTexture()
+//            surfaceDepthTexture.updateTexture()
+//            fullscreenTextureShader.useProgram()
+//            fullscreenTextureShader.setUniforms(
+//                projectionMatrixOrtho,
+//                surfaceTexture.getTextureID(),
+//                surfaceDepthTexture.getTextureID(),
+//                cutoffFactor,
+//                1f / width.toFloat(),
+//                1f / height.toFloat()
+//            )
+//            spriteMesh.bindData(fullscreenTextureShader)
+//            spriteMesh.draw()
+//        }
     }
+
+
 }
