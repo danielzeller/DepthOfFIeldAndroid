@@ -32,7 +32,7 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
     private var updateViewUntil = -1L
     private lateinit var renderer: RendererThread
 
-    var scale = 0.5f
+    var scale = 0.4f
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {}
 
@@ -178,6 +178,7 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
             spriteMesh.draw()
             downsampledTexture.unbindRenderTexture()
         }
+
         private fun pass2DownsampleAndDepth() {
             setupViewPort((width.toFloat() * scale).toInt(), (height.toFloat() * scale).toInt())
             downsampledTextureBlurred.bindRenderTexture()
@@ -192,11 +193,17 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
             spriteMesh.draw()
             downsampledTextureBlurred.unbindRenderTexture()
         }
+
         private fun pass3Composition() {
             setupViewPort(width, height)
 
             pass3FinalComposition.useProgram()
-            pass3FinalComposition.setUniformsPass3(projectionMatrixOrtho, downsampledTextureBlurred.fboTex, surfaceTexture.getTextureID())
+            pass3FinalComposition.setUniformsPass3(
+                projectionMatrixOrtho,
+                downsampledTextureBlurred.fboTex,
+                surfaceTexture.getTextureID(),
+                surfaceDepthTexture.getTextureID()
+            )
             spriteMesh.bindData(pass3FinalComposition)
             spriteMesh.draw()
         }

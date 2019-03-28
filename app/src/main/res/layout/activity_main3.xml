@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<no.danielzeller.depthoffield.opengl.CompBatMBLayoutGauss xmlns:android="http://schemas.android.com/apk/res/android"
+<no.danielzeller.depthoffield.opengl.CompBatMBLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/renderer"
@@ -107,6 +107,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+
             android:id="@+id/brawski">
 
             <View
@@ -126,4 +127,4 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</no.danielzeller.depthoffield.opengl.CompBatMBLayoutGauss>
+</no.danielzeller.depthoffield.opengl.CompBatMBLayout>

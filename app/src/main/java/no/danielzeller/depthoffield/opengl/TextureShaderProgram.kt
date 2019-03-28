@@ -48,7 +48,7 @@ class TextureShaderProgram(vertexShaderResourceId: Int, fragmentShaderResourceId
         glUniform2f(uSizeLocation, w, h)
     }
 
-    fun setUniformsPass3(matrix: FloatArray, textureId: Int, oroginalTextureId: Int) {
+    fun setUniformsPass3(matrix: FloatArray, textureId: Int, oroginalTextureId: Int, originalDepthId: Int) {
 
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
         glActiveTexture(GLES30.GL_TEXTURE0)
@@ -58,5 +58,9 @@ class TextureShaderProgram(vertexShaderResourceId: Int, fragmentShaderResourceId
         glActiveTexture(GLES30.GL_TEXTURE0 + 1)
         glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, oroginalTextureId)
         glUniform1i(uTextureUnitLocation, 1)
+
+        glActiveTexture(GLES30.GL_TEXTURE0 + 2)
+        glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, originalDepthId)
+        glUniform1i(uTextureDepthUnitLocation, 2)
     }
 }

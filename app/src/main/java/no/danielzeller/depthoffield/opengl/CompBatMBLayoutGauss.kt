@@ -2,29 +2,37 @@ package no.danielzeller.depthoffield.opengl
 
 import android.content.Context
 import android.graphics.*
+import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.Choreographer
-import android.view.TextureView
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import no.danielzeller.blurbehindlib.renderers.CommonRenderer
+import no.danielzeller.blurbehindlib.renderers.GLSurfaceViewRenderer
 
 
-class CompBatMBLayout : FrameLayout {
+class CompBatMBLayoutGauss : FrameLayout {
 
-    private lateinit var textureView: TextureView
-    private lateinit var textureViewRenderer: TextureViewRenderer
+    private lateinit var surfaceView: GLSurfaceView
 
     constructor(context: Context) : super(context, null)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        textureViewRenderer = TextureViewRenderer(context)
-        textureView = TextureView(context)
-        textureView.surfaceTextureListener = textureViewRenderer
-        textureViewRenderer.onSurfaceTextureCreated = {
-            drawTextureView()
-        }
+    private lateinit var commonRenderer: CommonRenderer
 
-        addView(textureView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+
+        commonRenderer = CommonRenderer(context, 0.5f, 0f)
+        commonRenderer.blurRadius = 40f
+        val openGLRenderer = GLSurfaceViewRenderer()
+
+        surfaceView= GLSurfaceView(context)
+        surfaceView.setEGLContextClientVersion(2)
+        surfaceView.setZOrderMediaOverlay(true)
+        surfaceView.setRenderer(openGLRenderer)
+        surfaceView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+
+        addView(surfaceView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        openGLRenderer.commonRenderer = commonRenderer
 
         Choreographer.getInstance().postFrameCallback(value)
     }
@@ -37,27 +45,25 @@ class CompBatMBLayout : FrameLayout {
     }
 
     protected fun drawTextureView() {
-        if (textureViewRenderer.isCreated) {
-            textureViewRenderer.cutoffFactor = getCutoffFactor()
-            val glCanvas = textureViewRenderer.surfaceTexture.beginDraw()
+        if (commonRenderer.isCreated) {
+            val glCanvas = commonRenderer.surfaceTexture.beginDraw()
             glCanvas?.drawColor(Color.WHITE)
             if (glCanvas != null) {
                 val metaBallContainer = getChildAt(1) as ViewGroup
                 setRegPaint(metaBallContainer)
                 drawChild(glCanvas, metaBallContainer, drawingTime)
             }
-            textureViewRenderer.updateForMilliSeconds(1000)
-            textureViewRenderer.surfaceTexture.endDraw(glCanvas)
+            commonRenderer.surfaceTexture.endDraw(glCanvas)
 
 
-            val glCanvasDepth = textureViewRenderer.surfaceDepthTexture.beginDraw()
-            glCanvasDepth?.drawColor(Color.BLACK)
+            val glCanvasDepth = commonRenderer.surfaceDepthTexture.beginDraw()
+            glCanvasDepth?.drawColor(Color.WHITE)
             if (glCanvasDepth != null) {
                 val metaBallContainer = getChildAt(1) as ViewGroup
                 setDepthPaint(metaBallContainer)
                 drawChild(glCanvasDepth, metaBallContainer, drawingTime)
             }
-            textureViewRenderer.surfaceDepthTexture.endDraw(glCanvasDepth)
+            commonRenderer.surfaceDepthTexture.endDraw(glCanvasDepth)
         }
     }
 
@@ -76,7 +82,7 @@ class CompBatMBLayout : FrameLayout {
     }
 
     private fun createPaint(depth: Float): Paint {
-        val d = 0.5 + depth / 2f
+        val d =Math.abs(depth)
         val paint = Paint()
         paint.colorFilter = PorterDuffColorFilter(
             Color.argb(
@@ -90,11 +96,8 @@ class CompBatMBLayout : FrameLayout {
         return paint
     }
 
-    open fun getCutoffFactor(): Float {
-        return 0.65f
-    }
 
     override fun dispatchDraw(canvas: Canvas) {
-        drawChild(canvas, textureView, drawingTime)
+        drawChild(canvas, surfaceView, drawingTime)
     }
 }

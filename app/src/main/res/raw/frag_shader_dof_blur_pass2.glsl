@@ -1,5 +1,5 @@
 #extension GL_OES_EGL_image_external : require
-precision highp float;
+precision mediump float;
 
 uniform sampler2D main_tex;
 //uniform samplerExternalOES depth_texture;
@@ -15,8 +15,8 @@ float remap(float value, float inputMin, float inputMax, float outputMin, float 
 uniform vec2 uPixelSize;
 const float uFar = 1.0;
 const float GOLDEN_ANGLE = 2.39996323;
-const float MAX_BLUR_SIZE = 10.0;
-const float RAD_SCALE = 0.5; // Smaller = nicer blur, larger = faster
+const float MAX_BLUR_SIZE = 8.0;
+const float RAD_SCALE = 0.6; // Smaller = nicer blur, larger = faster
 
 float getBlurSize(float depth, float focusPoint, float focusScale)
 {
@@ -34,7 +34,7 @@ vec4 depthOfField(vec2 texCoord, float focusPoint, float focusScale)
 	float radius = RAD_SCALE;
 
 	float sampleSum =centerSize;
-	for (float ang = 0.0; radius<MAX_BLUR_SIZE; ang += GOLDEN_ANGLE)
+	for (float ang = 0.0; radius<MAX_BLUR_SIZE; ang += GOLDEN_ANGLE*4.0)
 	{
 		vec2 tc = texCoord + vec2(cos(ang), sin(ang)) * uPixelSize * radius;
 
