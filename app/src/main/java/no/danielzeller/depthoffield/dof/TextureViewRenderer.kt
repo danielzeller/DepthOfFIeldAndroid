@@ -1,4 +1,4 @@
-package no.danielzeller.depthoffield.opengl
+package no.danielzeller.depthoffield.dof
 
 
 import android.content.Context
@@ -12,6 +12,10 @@ import android.opengl.Matrix
 import android.os.Handler
 import android.view.TextureView
 import no.danielzeller.depthoffield.R
+import no.danielzeller.depthoffield.opengl.RenderTexture
+import no.danielzeller.depthoffield.opengl.SpriteMesh
+import no.danielzeller.depthoffield.opengl.TextureShaderProgram
+import no.danielzeller.depthoffield.opengl.ViewSurfaceTexture
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGL10.*
 import javax.microedition.khronos.egl.EGLConfig
@@ -59,10 +63,17 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
         var isStopped = false
         private val projectionMatrixOrtho = FloatArray(16)
         private lateinit var spriteMesh: SpriteMesh
-        private val pass1DownsampleAndDepth = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_dof_downscale_pass1)
-        private val pass2Blur = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_shader_dof_blur_pass2)
+        private val pass1DownsampleAndDepth = TextureShaderProgram(
+            R.raw.vertex_shader,
+            R.raw.frag_dof_pass1_downscale
+        )
+        private val pass2Blur =
+            TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_dof_pass2_blur)
         private val pass3FinalComposition =
-            TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_shader_dof_composition_pass3)
+            TextureShaderProgram(
+                R.raw.vertex_shader,
+                R.raw.frag_dof_pass3_composition
+            )
         private var downsampledTexture = RenderTexture()
         private var downsampledTextureBlurred = RenderTexture()
         private val handler = Handler()

@@ -15,7 +15,7 @@ float remap(float value, float inputMin, float inputMax, float outputMin, float 
 uniform vec2 uPixelSize;
 const float uFar = 1.0;
 const float GOLDEN_ANGLE = 2.39996323;
-const float MAX_BLUR_SIZE = 8.0;
+const float MAX_BLUR_SIZE = 12.0;
 const float RAD_SCALE = 0.6; // Smaller = nicer blur, larger = faster
 
 float getBlurSize(float depth, float focusPoint, float focusScale)

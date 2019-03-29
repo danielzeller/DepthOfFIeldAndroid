@@ -1,4 +1,4 @@
-package no.danielzeller.depthoffield
+package no.danielzeller.depthoffield.animation
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

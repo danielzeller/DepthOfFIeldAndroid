@@ -11,7 +11,7 @@ import no.danielzeller.depthoffield.R
 import no.danielzeller.depthoffield.opengl.*
 
 
-class CommonRenderer(
+class CommonRenderer2(
     private val context: Context,
     internal val scale: Float,
     private val paddingVertical: Float
@@ -26,8 +26,7 @@ class CommonRenderer(
     private val projectionMatrixOrtho = FloatArray(16)
     private lateinit var spriteMesh: SpriteMesh
 
-    private val fullscreenTextureShader = TextureShaderProgram(R.raw.vertex_shader, R.raw.texture_frag)
-    private val fullscreenMaskTextureShader = TextureShaderProgram(R.raw.vertex_shader, R.raw.texture_and_mask_frag)
+    private val fullscreenTextureShader = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_texture)
 
     private val gauss2PassHorizontal = TextureShaderProgram(R.raw.vertex_shader, R.raw.gauss_2_pass_horizontal)
     private val gauss2PassVertical = TextureShaderProgram(R.raw.vertex_shader, R.raw.gauss_2_pass_vertical)
@@ -43,7 +42,6 @@ class CommonRenderer(
 
         spriteMesh = SpriteMesh()
         fullscreenTextureShader.load(context)
-        fullscreenMaskTextureShader.load(context)
         gauss2PassHorizontal.load(context)
         gauss2PassVertical.load(context)
     }
@@ -160,7 +158,6 @@ class CommonRenderer(
 
     fun destroyResources() {
         GLES20.glDeleteProgram(fullscreenTextureShader.program)
-        GLES20.glDeleteProgram(fullscreenMaskTextureShader.program)
         GLES20.glDeleteProgram(gauss2PassHorizontal.program)
         GLES20.glDeleteProgram(gauss2PassVertical.program)
 

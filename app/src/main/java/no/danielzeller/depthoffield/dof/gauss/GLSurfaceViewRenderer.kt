@@ -7,7 +7,7 @@ import javax.microedition.khronos.opengles.GL10
 
 class GLSurfaceViewRenderer : Renderer {
 
-    lateinit var commonRenderer: CommonRenderer
+    lateinit var commonRenderer: CommonRenderer2
 
     override fun onSurfaceCreated(glUnused: GL10, config: EGLConfig) {
         clearView()
