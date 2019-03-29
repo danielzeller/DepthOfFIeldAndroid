@@ -12,7 +12,7 @@ import no.danielzeller.blurbehindlib.renderers.DOFRenderer
 import no.danielzeller.blurbehindlib.renderers.GLSurfaceViewRenderer
 
 
-class CompBatMBLayoutGauss : FrameLayout {
+class DOFLayoutGaussTest : FrameLayout {
 
     private lateinit var surfaceView: GLSurfaceView
 

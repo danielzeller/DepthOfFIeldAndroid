@@ -15,12 +15,18 @@ class DOFLayout : FrameLayout {
     private lateinit var surfaceView: GLSurfaceView
     private lateinit var renderer: DOFRenderer
 
-    constructor(context: Context) : super(context, null)
+    constructor(context: Context) : super(context) {
+        setupView(context)
+    }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        setupView(context)
+    }
+
+    private fun setupView(context: Context) {
         renderer = DOFRenderer(context)
 
-        surfaceView= GLSurfaceView(context)
+        surfaceView = GLSurfaceView(context)
         surfaceView.setEGLContextClientVersion(2)
         surfaceView.setZOrderMediaOverlay(true)
         surfaceView.setRenderer(renderer)
@@ -33,7 +39,8 @@ class DOFLayout : FrameLayout {
     val value = object : Choreographer.FrameCallback {
         override fun doFrame(frameTimeNanos: Long) {
             drawTextureView()
-            Choreographer.getInstance().postFrameCallback(this)
+                Choreographer.getInstance().postFrameCallback(this)
+
         }
     }
 
@@ -71,14 +78,15 @@ class DOFLayout : FrameLayout {
     private fun setDepthPaint(view: ViewGroup) {
         for (i in 0 until view.childCount) {
             val v = view.getChildAt(i)
-            v.setLayerType(LAYER_TYPE_HARDWARE, createPaint(v.translationZ))
+            val paint = (v.tag as Paint?) ?: Paint()
+            v.setLayerType(LAYER_TYPE_HARDWARE, createPaint(v.translationZ, paint))
+            v.setTag(paint)
         }
     }
 
-    private fun createPaint(depth: Float): Paint {
+    private fun createPaint(depth: Float, paint: Paint): Paint {
         val d = 0.5 + depth / 2f
-        val paint = Paint()
-        paint.colorFilter = PorterDuffColorFilter(
+        val porterDuffColorFilter = PorterDuffColorFilter(
             Color.argb(
                 255,
                 (d * 255f).toInt(),
@@ -86,6 +94,7 @@ class DOFLayout : FrameLayout {
                 (d * 255f).toInt()
             ), PorterDuff.Mode.SRC_ATOP
         )
+        paint.colorFilter = porterDuffColorFilter
 
         return paint
     }
