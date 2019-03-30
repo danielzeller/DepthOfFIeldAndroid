@@ -5,18 +5,18 @@ uniform sampler2D main_tex;
 //uniform samplerExternalOES depth_texture;
 uniform float cutoff;
 varying vec2 v_TextureCoordinates;
+uniform vec2 uPixelSize;
+
+const float uFar = 1.0;
+const float GOLDEN_ANGLE = 2.39996323;
+const float MAX_BLUR_SIZE = 12.0;
+const float RAD_SCALE = 0.6; // Smaller = nicer blur, larger = faster
+
 
 float remap(float value, float inputMin, float inputMax, float outputMin, float outputMax)
 {
     return (value - inputMin) * ((outputMax - outputMin) / (inputMax - inputMin)) + outputMin;
 }
-
-
-uniform vec2 uPixelSize;
-const float uFar = 1.0;
-const float GOLDEN_ANGLE = 2.39996323;
-const float MAX_BLUR_SIZE = 12.0;
-const float RAD_SCALE = 0.6; // Smaller = nicer blur, larger = faster
 
 float getBlurSize(float depth, float focusPoint, float focusScale)
 {
@@ -24,12 +24,19 @@ float getBlurSize(float depth, float focusPoint, float focusScale)
 	return abs(coc) * MAX_BLUR_SIZE;
 }
 
+float blurAmount(float depth, float focusPoint, float focusScale)
+{
+	float centerDepth =1.0- depth;
+
+	return centerDepth;
+}
+
 vec4 depthOfField(vec2 texCoord, float focusPoint, float focusScale)
 {
     vec4 combined = texture2D(main_tex, texCoord);
-	float centerDepth = combined.a;
+	float centerDepth =  blurAmount(combined.a,0.5, 1.0);
 	float centerSize = getBlurSize(centerDepth, focusPoint, focusScale);
-	vec3 color = combined.rgb;
+	vec4 color = combined;
 	float tot = 1.0;
 	float radius = RAD_SCALE;
 
@@ -39,8 +46,8 @@ vec4 depthOfField(vec2 texCoord, float focusPoint, float focusScale)
 		vec2 tc = texCoord + vec2(cos(ang), sin(ang)) * uPixelSize * radius;
 
 		vec4 sampleCombined = texture2D(main_tex, tc);
-		vec3 sampleColor = sampleCombined.rgb;
-		float sampleDepth = sampleCombined.a;
+		vec4 sampleColor = sampleCombined;
+		float sampleDepth = blurAmount(sampleCombined.a,0.5, 1.0);
 		float sampleSize = getBlurSize(sampleDepth, focusPoint, focusScale);
 		if (sampleDepth > centerDepth){
 			sampleSize = clamp(sampleSize, 0.0, centerSize*2.0);
@@ -51,7 +58,7 @@ vec4 depthOfField(vec2 texCoord, float focusPoint, float focusScale)
 		tot += 1.0;
 		radius += RAD_SCALE/radius;
 	}
-	return vec4(color /= tot,((sampleSum/MAX_BLUR_SIZE)/tot));
+	return vec4(color /= tot);
 }
 
 

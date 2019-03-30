@@ -92,7 +92,7 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
     private fun makeAHorribleMessThatOnlyICanRead() {
         val interpolator = PathInterpolatorCompat.create(.42f, 0f, .71f, .45f)
         val interpolator2 = PathInterpolatorCompat.create(0f, .99f, .32f, .99f)
-        val interpolator3 = PathInterpolatorCompat.create(.74f,.29f,.91f,.83f)
+        val interpolator3 = PathInterpolatorCompat.create(.64f,.5f,1f,.93f)
         recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 for (i in 0..recyclerView.childCount) {
@@ -100,7 +100,7 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
 
                     view?.apply {
                         val center = (recyclerView.parent as View).height * 0.6f
-                        val centerBottom = (recyclerView.parent as View).height* 0.79f
+                        val centerBottom = (recyclerView.parent as View).height* 0.7f
                         if (view.bottom < center) {
                             val percentTilTop = view.bottom.toFloat() / center
                             val offsetAmount = center * 0.8f * interpolator.getInterpolation(1f - percentTilTop)
@@ -117,13 +117,13 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
                         } else if (view.top > centerBottom) {
                             val percentTilBottom =
                                 1f - ((recyclerView.parent as View).height*1.3f - view.top.toFloat()) / ((recyclerView.parent as View).height*1.3f - centerBottom)
-                            val scale = 1f +interpolator3.getInterpolation(percentTilBottom) * 0.4f
+                            val scale = 1f +interpolator3.getInterpolation(percentTilBottom) * 0.5f
                             view.scaleX = scale
                             view.scaleY = scale
                             view.pivotY = 0f
                             view.pivotX = view.width.toFloat() / 2f
                             view.translationZ = Math.min(1f,interpolator3.getInterpolation( percentTilBottom*1.2f))
-                            view.translationY = -interpolator3.getInterpolation(percentTilBottom) *  (view.height*0.56f)
+                            view.translationY = -interpolator3.getInterpolation(percentTilBottom) *  (view.height*0.45f)
                         } else {
                             view.translationY = 0f
                             view.scaleX = 1f

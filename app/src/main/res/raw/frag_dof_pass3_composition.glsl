@@ -17,6 +17,9 @@ void main()
     vec4 downSampled = texture2D(main_tex, textureCoordinates);
     vec4 original = texture2D(surface_texture, textureCoordinatesFlipped);
     vec4 originalDepth = texture2D(depth_texture, textureCoordinatesFlipped);
-    float blendMaount= ((0.5-originalDepth.r)*2.0)*10.0;
-    gl_FragColor =mix(original,downSampled, clamp(0.0,1.0,blendMaount) );
+    float blendMaount= (abs(0.5-((originalDepth.r + downSampled.a)/2.0))*2.0)*10.0;
+
+    gl_FragColor =mix(original ,downSampled, clamp(0.0,1.0,blendMaount) );
+     gl_FragColor = vec4(downSampled.rgb,1.0);
+
 }

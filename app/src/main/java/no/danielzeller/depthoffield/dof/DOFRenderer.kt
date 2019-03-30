@@ -11,6 +11,7 @@ import no.danielzeller.depthoffield.opengl.RenderTexture
 import no.danielzeller.depthoffield.opengl.SpriteMesh
 import no.danielzeller.depthoffield.opengl.TextureShaderProgram
 import no.danielzeller.depthoffield.opengl.ViewSurfaceTexture
+import no.opengl.danielzeller.opengltesting.opengl.util.TextureHelper.loadTexture
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -40,6 +41,7 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
     private var width = 0
     private var height = 0
     var isCreated = false
+//    private var blueNoiseTextureId = 0
 
     override fun onSurfaceCreated(glUnused: GL10, config: EGLConfig) {
         clearViewSurfaceTexture()
@@ -74,6 +76,7 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
         surfaceDepthTexture.createSurface(width, height)
         downsampledTexture.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
         downsampledTextureBlurred.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
+//        blueNoiseTextureId = loadTexture(context, R.drawable.blue_noise)
     }
 
 
@@ -99,8 +102,9 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
             projectionMatrixOrtho,
             surfaceTexture.getTextureID(),
             surfaceDepthTexture.getTextureID(),
-            1f / (width.toFloat() * scale),
-            1f / (height.toFloat() * scale)
+            width.toFloat() * scale,
+            height.toFloat() * scale,
+            0
         )
         spriteMesh.bindData(pass1DownsampleAndDepth)
         spriteMesh.draw()

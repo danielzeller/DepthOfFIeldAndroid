@@ -183,7 +183,8 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
                 surfaceTexture.getTextureID(),
                 surfaceDepthTexture.getTextureID(),
                 1f / (width.toFloat() * scale),
-                1f / (height.toFloat() * scale)
+                1f / (height.toFloat() * scale),
+                0
             )
             spriteMesh.bindData(pass1DownsampleAndDepth)
             spriteMesh.draw()
