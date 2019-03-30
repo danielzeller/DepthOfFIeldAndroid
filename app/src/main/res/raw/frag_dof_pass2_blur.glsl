@@ -10,7 +10,7 @@ uniform vec2 uPixelSize;
 const float uFar = 1.0;
 const float GOLDEN_ANGLE = 2.39996323;
 const float MAX_BLUR_SIZE = 12.0;
-const float RAD_SCALE = 0.6; // Smaller = nicer blur, larger = faster
+const float RAD_SCALE = 1.0; // Smaller = nicer blur, larger = faster
 
 
 float remap(float value, float inputMin, float inputMax, float outputMin, float outputMax)
@@ -41,7 +41,7 @@ vec4 depthOfField(vec2 texCoord, float focusPoint, float focusScale)
 	float radius = RAD_SCALE;
 
 	float sampleSum =centerSize;
-	for (float ang = 0.0; radius<MAX_BLUR_SIZE; ang += GOLDEN_ANGLE*4.0)
+	for (float ang = 0.0; radius<MAX_BLUR_SIZE; ang += GOLDEN_ANGLE)
 	{
 		vec2 tc = texCoord + vec2(cos(ang), sin(ang)) * uPixelSize * radius;
 

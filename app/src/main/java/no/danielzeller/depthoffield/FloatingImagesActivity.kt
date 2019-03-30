@@ -59,13 +59,13 @@ class FloatingImagesActivity : AppCompatActivity() {
 
     private fun animateView(view: View) {
         val moveXY = resources.displayMetrics.widthPixels.toFloat()
-        val motion = BrownianMotion(Vector3(moveXY, moveXY, -1f))
+        val motion = BrownianMotion(Vector3(moveXY, moveXY, 1f))
         motion.positionFrequency = 0.15f
         ValueAnimator.ofFloat(0f, 1f).setDuration(10000000000).onUpdate {
             motion.update()
             view.translationX = motion.position.x
             view.translationY = motion.position.y
-            val zPos = if (motion.position.z > 0) -motion.position.z else motion.position.z
+            val zPos = motion.position.z
             view.translationZ = zPos
             val scale = 1f + zPos
             view.scaleX = scale

@@ -20,7 +20,7 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     val surfaceTexture = ViewSurfaceTexture()
     val surfaceDepthTexture = ViewSurfaceTexture()
-    var scale = 0.4f
+    var scale = 0.5f
 
     private val projectionMatrixOrtho = FloatArray(16)
     private lateinit var spriteMesh: SpriteMesh
@@ -144,6 +144,10 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
         pass1DownsampleAndDepth()
         pass2DownsampleAndDepth()
         pass3Composition()
+    }
+
+    fun destroy(){
+    //TODO: delete resources
     }
 
 }

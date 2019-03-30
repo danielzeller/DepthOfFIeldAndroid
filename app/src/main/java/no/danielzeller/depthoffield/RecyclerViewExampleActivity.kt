@@ -124,6 +124,7 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
                             view.pivotX = view.width.toFloat() / 2f
                             view.translationZ = Math.min(1f,interpolator3.getInterpolation( percentTilBottom*1.2f))
                             view.translationY = -interpolator3.getInterpolation(percentTilBottom) *  (view.height*0.45f)
+
                         } else {
                             view.translationY = 0f
                             view.scaleX = 1f

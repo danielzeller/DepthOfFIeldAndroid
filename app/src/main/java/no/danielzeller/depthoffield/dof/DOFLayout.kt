@@ -34,14 +34,20 @@ class DOFLayout : FrameLayout {
         addView(surfaceView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
 
         Choreographer.getInstance().postFrameCallback(value)
+
     }
 
     val value = object : Choreographer.FrameCallback {
         override fun doFrame(frameTimeNanos: Long) {
             drawTextureView()
-                Choreographer.getInstance().postFrameCallback(this)
-
+            Choreographer.getInstance().postFrameCallback(this)
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        Choreographer.getInstance().removeFrameCallback(value)
+        renderer.destroy()
     }
 
     protected fun drawTextureView() {

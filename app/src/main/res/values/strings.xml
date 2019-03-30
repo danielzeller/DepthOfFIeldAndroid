@@ -17,4 +17,5 @@
         <item>plant</item>
         <item>style</item>
     </string-array>
+    <string name="title_activity_select_example">SelectExampleActivity</string>
 </resources>
