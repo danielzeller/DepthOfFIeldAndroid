@@ -2,8 +2,8 @@ package no.danielzeller.depthoffield
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_recycler_view_example.*
 import kotlinx.android.synthetic.main.content_recycler_view_example.*
 import kotlinx.android.synthetic.main.image_card.view.*
+
 
 private const val UNSPLASH_RANDOM_URL = "https://source.unsplash.com/960x540?"
 
@@ -35,12 +36,27 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         val viewManager = LinearLayoutManager(this)
-        val viewAdapter = MyAdapter(createUrls(), picasso)
+        val viewAdapter = SimpleCardAdapter(createUrls(), picasso)
 
         recycler_view.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
+            addItemDecoration(object:RecyclerView.ItemDecoration() {
+
+                override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                    val position = parent.getChildAdapterPosition(view)
+                    val adapter = parent.adapter!!
+
+                    if (position == 0) {
+                        outRect.top = (400f*resources.displayMetrics.density).toInt()
+                    }
+
+                    if (position == adapter.itemCount - 1) {
+                        outRect.bottom = (400f*resources.displayMetrics.density).toInt()
+                    }
+                }
+            })
         }
     }
 
@@ -49,16 +65,15 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
         return Array(searchTerm.size) { i -> UNSPLASH_RANDOM_URL + searchTerm[i] }
     }
 
-
-    class MyAdapter(private val imageUrls: Array<String>, val picasso: Picasso) :
-        RecyclerView.Adapter<MyAdapter.SimpleImageVIewHolder>() {
+    class SimpleCardAdapter(private val imageUrls: Array<String>, val picasso: Picasso) :
+        RecyclerView.Adapter<SimpleCardAdapter.SimpleImageVIewHolder>() {
 
         class SimpleImageVIewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val imageView = itemView.imageView
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyAdapter.SimpleImageVIewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.image_card, parent, false)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimpleCardAdapter.SimpleImageVIewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.image_card_fullscreen, parent, false)
             view.clipToOutline = true
             return SimpleImageVIewHolder(view)
         }
@@ -66,6 +81,9 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
         @SuppressLint("NewApi")
         override fun onBindViewHolder(holder: SimpleImageVIewHolder, position: Int) {
             picasso.load(imageUrls[position]).config(Bitmap.Config.ARGB_8888).into(holder.imageView)
+            holder.itemView.translationY=0f
+            holder.itemView.translationZ=0f
+            holder.itemView.alpha = 1f
         }
 
         override fun getItemCount() = imageUrls.size
@@ -73,14 +91,16 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
 
     private fun makeAHorribleMessThatOnlyICanRead() {
         val interpolator = PathInterpolatorCompat.create(.42f, 0f, .71f, .45f)
-        val interpolator2 = PathInterpolatorCompat.create(0f,.99f,.32f,.99f)
+        val interpolator2 = PathInterpolatorCompat.create(0f, .99f, .32f, .99f)
+        val interpolator3 = PathInterpolatorCompat.create(.74f,.29f,.91f,.83f)
         recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 for (i in 0..recyclerView.childCount) {
                     val view = recyclerView.getChildAt(i)
 
                     view?.apply {
-                        val center = recyclerView.height * 0.6f
+                        val center = (recyclerView.parent as View).height * 0.6f
+                        val centerBottom = (recyclerView.parent as View).height* 0.79f
                         if (view.bottom < center) {
                             val percentTilTop = view.bottom.toFloat() / center
                             val offsetAmount = center * 0.8f * interpolator.getInterpolation(1f - percentTilTop)
@@ -94,7 +114,17 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
                             view.pivotX = view.width.toFloat() / 2f
                             view.translationZ = -(1 - percentTilTop)
                             view.alpha = interpolator2.getInterpolation(percentTilTop)
-                        } else if (view.bottom > center) {
+                        } else if (view.top > centerBottom) {
+                            val percentTilBottom =
+                                1f - ((recyclerView.parent as View).height*1.3f - view.top.toFloat()) / ((recyclerView.parent as View).height*1.3f - centerBottom)
+                            val scale = 1f +interpolator3.getInterpolation(percentTilBottom) * 0.4f
+                            view.scaleX = scale
+                            view.scaleY = scale
+                            view.pivotY = 0f
+                            view.pivotX = view.width.toFloat() / 2f
+                            view.translationZ = Math.min(1f,interpolator3.getInterpolation( percentTilBottom*1.2f))
+                            view.translationY = -interpolator3.getInterpolation(percentTilBottom) *  (view.height*0.56f)
+                        } else {
                             view.translationY = 0f
                             view.scaleX = 1f
                             view.scaleY = 1f
