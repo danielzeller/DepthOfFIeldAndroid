@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.content_recycler_view_example.*
 import kotlinx.android.synthetic.main.image_card.view.*
 
 
-private const val UNSPLASH_RANDOM_URL = "https://source.unsplash.com/960x540?"
+private const val UNSPLASH_RANDOM_URL = "https://source.unsplash.com/1080x1080?"
 
 class RecyclerViewExampleActivity : AppCompatActivity() {
 
