@@ -1,5 +1,5 @@
 #extension GL_OES_EGL_image_external : require
-precision highp float;
+precision mediump float;
 
 uniform samplerExternalOES surface_texture;
 uniform samplerExternalOES depth_texture;
@@ -17,9 +17,11 @@ void main()
     vec4 downSampled = texture2D(main_tex, textureCoordinates);
     vec4 original = texture2D(surface_texture, textureCoordinatesFlipped);
     vec4 originalDepth = texture2D(depth_texture, textureCoordinatesFlipped);
-    float blendMaount= (abs(0.5-((originalDepth.r + downSampled.a)/2.0))*2.0)*10.0;
+    float blendMaount= 1.0;
+    if((downSampled.a>0.47 && downSampled.a<0.505) && (originalDepth.r>0.49 && originalDepth.r<0.51) ){
+        blendMaount =0.0;
+    }
 
-    gl_FragColor =mix(original ,downSampled, clamp(0.0,1.0,blendMaount) );
-     gl_FragColor = vec4(downSampled.rgb,1.0);
+    gl_FragColor =mix(original,downSampled,   blendMaount );
 
 }

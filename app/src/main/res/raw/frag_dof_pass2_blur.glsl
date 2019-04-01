@@ -10,7 +10,7 @@ uniform vec2 uPixelSize;
 const float uFar = 1.0;
 const float GOLDEN_ANGLE = 2.39996323;
 const float MAX_BLUR_SIZE = 13.0;
-const float RAD_SCALE = 1.0; // Smaller = nicer blur, larger = faster
+const float RAD_SCALE = 1.5; // Smaller = nicer blur, larger = faster
 
 
 
