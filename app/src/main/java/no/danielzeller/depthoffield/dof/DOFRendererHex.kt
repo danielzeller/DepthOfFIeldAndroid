@@ -137,11 +137,12 @@ class DOFRendererHex(private val context: Context) : GLSurfaceView.Renderer {
 
     private fun doRenderFrame() {
         pass1DownsampleAndDepth()
-        pass2Blur(downsampledTexture2, downsampledTexture,0.04f, 0.02f)
-        pass2Blur(downsampledTexture, downsampledTexture2,0.04f, -0.02f)
-        pass2Blur(downsampledTexture2, downsampledTexture,0.00f, 0.04f)
-//        pass2Blur(downsampledTexture2, downsampledTexture,0.04f, 0.00f, 2f)
-//        pass2Blur(downsampledTexture, downsampledTexture2,0.00f, 0.04f, 1f)
+        val xScale=height.toFloat()/width.toFloat()
+        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*xScale, 0.02f)
+        pass2Blur(downsampledTexture, downsampledTexture2,0.02f*xScale, -0.02f)
+        pass2Blur(downsampledTexture2, downsampledTexture,0.00f, 0.02f)
+//        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*height.toFloat()/width.toFloat(), 0.00f)
+//        pass2Blur(downsampledTexture, downsampledTexture2,0.00f, 0.02f)
         pass3Composition()
     }
 

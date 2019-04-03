@@ -55,7 +55,7 @@ class DOFLayout : FrameLayout {
         if (renderer.isCreated) {
 
             val glCanvas = renderer.surfaceTexture.beginDraw()
-            glCanvas?.drawColor(Color.parseColor("#000000"))
+            glCanvas?.drawColor(Color.parseColor("#E0DFE0"))
             if (glCanvas != null) {
                 val metaBallContainer = getChildAt(1) as ViewGroup
                 setRegPaint(metaBallContainer)
