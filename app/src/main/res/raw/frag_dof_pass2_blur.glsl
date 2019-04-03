@@ -29,34 +29,27 @@ float blurAmount(float depth, float focusPoint, float focusScale)
 
 vec4 depthOfField(vec2 texCoord, float focusPoint, float focusScale)
 {
-    vec4 combined = texture2D(main_tex, texCoord);
-	float centerDepth =  blurAmount(combined.a,0.5, 1.0);
+	vec4 color =  texture2D(main_tex, texCoord);
+	float centerDepth = color.a * uFar;
 	float centerSize = getBlurSize(centerDepth, focusPoint, focusScale);
-	vec4 color = combined;
+
 	float tot = 1.0;
 	float radius = RAD_SCALE;
-
-	float sampleSum =centerSize;
 	for (float ang = 0.0; radius<MAX_BLUR_SIZE; ang += GOLDEN_ANGLE)
 	{
 		vec2 tc = texCoord + vec2(cos(ang), sin(ang)) * uPixelSize * radius;
-
-		vec4 sampleCombined = texture2D(main_tex, tc);
-		vec4 sampleColor = sampleCombined;
-		float sampleDepth = blurAmount(sampleCombined.a,0.5, 1.0);
+		vec4 sampleColor =  texture2D(main_tex, tc);
+		float sampleDepth = sampleColor.a * uFar;
 		float sampleSize = getBlurSize(sampleDepth, focusPoint, focusScale);
-		if (sampleDepth > centerDepth){
+		if (sampleDepth > centerDepth)
 			sampleSize = clamp(sampleSize, 0.0, centerSize*2.0);
-		}
-		sampleSum+=sampleSize;
 		float m = smoothstep(radius-0.5, radius+0.5, sampleSize);
 		color += mix(color/tot, sampleColor, m);
 		tot += 1.0;
 		radius += RAD_SCALE/radius;
 	}
-	return vec4(color /= tot);
+	return color /= tot;
 }
-
 
 void main()
 {

@@ -15,7 +15,7 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 
-class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
+class DOFRendererHex(private val context: Context) : GLSurfaceView.Renderer {
 
     val surfaceTexture = ViewSurfaceTexture()
     val surfaceDepthTexture = ViewSurfaceTexture()
@@ -23,24 +23,15 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     private val projectionMatrixOrtho = FloatArray(16)
     private lateinit var spriteMesh: SpriteMesh
-    private val pass1DownsampleAndDepth = TextureShaderProgram(
-        R.raw.vertex_shader,
-        R.raw.frag_dof_pass1_downscale
-    )
-    private val pass2Blur =
-        TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_dof_pass2_blur)
-    private val pass3FinalComposition =
-        TextureShaderProgram(
-            R.raw.vertex_shader,
-            R.raw.frag_dof_pass3_composition
-        )
+    private val pass1DownsampleAndDepth = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_dof_pass1_downscale)
+    private val pass2Blur = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_hex_dof_pass2_blur)
+    private val pass3FinalComposition = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_hex_dof_pass3_composition)
     private var downsampledTexture = RenderTexture()
-    private var downsampledTextureBlurred = RenderTexture()
+    private var downsampledTexture2 = RenderTexture()
 
     private var width = 0
     private var height = 0
     var isCreated = false
-//    private var blueNoiseTextureId = 0
 
     override fun onSurfaceCreated(glUnused: GL10, config: EGLConfig) {
         clearViewSurfaceTexture()
@@ -74,8 +65,7 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
         surfaceTexture.createSurface(width, height)
         surfaceDepthTexture.createSurface(width, height)
         downsampledTexture.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
-        downsampledTextureBlurred.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
-//        blueNoiseTextureId = loadTexture(context, R.drawable.blue_noise)
+        downsampledTexture2.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
     }
 
 
@@ -110,19 +100,25 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
         downsampledTexture.unbindRenderTexture()
     }
 
-    private fun pass2Blur() {
+    private fun pass2Blur(
+        drawToTexture: RenderTexture,
+        readFromTexture: RenderTexture,
+        dirX: Float,
+        dirY: Float
+    ) {
         setupViewPort((width.toFloat() * scale).toInt(), (height.toFloat() * scale).toInt())
-        downsampledTextureBlurred.bindRenderTexture()
+        drawToTexture.bindRenderTexture()
         pass2Blur.useProgram()
-        pass2Blur.setUniformsPass2(
+        pass2Blur.setUniformsHexPass2(
             projectionMatrixOrtho,
-            downsampledTexture.fboTex,
-            1f / (width.toFloat() * scale),
-            1f / (height.toFloat() * scale)
+            readFromTexture.fboTex,
+            (width.toFloat() * scale),
+            (height.toFloat() * scale),
+            dirX, dirY
         )
         spriteMesh.bindData(pass2Blur)
         spriteMesh.draw()
-        downsampledTextureBlurred.unbindRenderTexture()
+        drawToTexture.unbindRenderTexture()
     }
 
     private fun pass3Composition() {
@@ -131,7 +127,7 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
         pass3FinalComposition.useProgram()
         pass3FinalComposition.setUniformsPass3(
             projectionMatrixOrtho,
-            downsampledTextureBlurred.fboTex,
+            downsampledTexture2.fboTex,
             surfaceTexture.getTextureID(),
             surfaceDepthTexture.getTextureID()
         )
@@ -141,12 +137,16 @@ class DOFRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     private fun doRenderFrame() {
         pass1DownsampleAndDepth()
-        pass2Blur()
+        pass2Blur(downsampledTexture2, downsampledTexture,0.04f, 0.02f)
+        pass2Blur(downsampledTexture, downsampledTexture2,0.04f, -0.02f)
+        pass2Blur(downsampledTexture2, downsampledTexture,0.00f, 0.04f)
+//        pass2Blur(downsampledTexture2, downsampledTexture,0.04f, 0.00f, 2f)
+//        pass2Blur(downsampledTexture, downsampledTexture2,0.00f, 0.04f, 1f)
         pass3Composition()
     }
 
-    fun destroy(){
-    //TODO: delete resources
+    fun destroy() {
+        //TODO: delete resources
     }
 
 }

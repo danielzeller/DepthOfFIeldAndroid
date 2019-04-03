@@ -18,9 +18,10 @@ void main()
     vec4 original = texture2D(surface_texture, textureCoordinatesFlipped);
     vec4 originalDepth = texture2D(depth_texture, textureCoordinatesFlipped);
     float blendMaount= 1.0;
-    if((downSampled.a>0.47 && downSampled.a<0.505) && (originalDepth.r>0.49 && originalDepth.r<0.51) ){
+    if((originalDepth.r>0.49 && originalDepth.r<0.51) ){
         blendMaount =0.0;
     }
 
-    gl_FragColor =mix(original,downSampled,   blendMaount );
+    gl_FragColor = mix(original,downSampled,   blendMaount );
+
 }

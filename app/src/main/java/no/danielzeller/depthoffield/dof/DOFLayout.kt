@@ -9,11 +9,12 @@ import android.view.Choreographer
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import no.danielzeller.blurbehindlib.renderers.DOFRenderer
+import no.danielzeller.blurbehindlib.renderers.DOFRendererHex
 
 class DOFLayout : FrameLayout {
 
     private lateinit var surfaceView: GLSurfaceView
-    private lateinit var renderer: DOFRenderer
+    private lateinit var renderer: DOFRendererHex
 
     constructor(context: Context) : super(context) {
         setupView(context)
@@ -24,7 +25,7 @@ class DOFLayout : FrameLayout {
     }
 
     private fun setupView(context: Context) {
-        renderer = DOFRenderer(context)
+        renderer = DOFRendererHex(context)
 
         surfaceView = GLSurfaceView(context)
         surfaceView.setEGLContextClientVersion(2)
@@ -54,7 +55,7 @@ class DOFLayout : FrameLayout {
         if (renderer.isCreated) {
 
             val glCanvas = renderer.surfaceTexture.beginDraw()
-            glCanvas?.drawColor(Color.parseColor("#E0DFE0"))
+            glCanvas?.drawColor(Color.parseColor("#000000"))
             if (glCanvas != null) {
                 val metaBallContainer = getChildAt(1) as ViewGroup
                 setRegPaint(metaBallContainer)
@@ -64,7 +65,7 @@ class DOFLayout : FrameLayout {
 
 
             val glCanvasDepth = renderer.surfaceDepthTexture.beginDraw()
-            glCanvasDepth?.drawColor(Color.BLACK)
+            glCanvasDepth?.drawColor(Color.WHITE)
             if (glCanvasDepth != null) {
                 val metaBallContainer = getChildAt(1) as ViewGroup
                 setDepthPaint(metaBallContainer)
@@ -91,7 +92,7 @@ class DOFLayout : FrameLayout {
     }
 
     private fun createPaint(depth: Float, paint: Paint): Paint {
-        val d = 0.5 + depth / 2f
+        val d = 0.5 - depth / 2f
         val porterDuffColorFilter = PorterDuffColorFilter(
             Color.argb(
                 255,

@@ -167,7 +167,7 @@
 //            surfaceTexture.updateTexture()
 //            surfaceDepthTexture.updateTexture()
 //            pass1DownsampleAndDepth.useProgram()
-//            pass1DownsampleAndDepth.setUniforms(
+//            pass1DownsampleAndDepth.setUniformsPass1(
 //                projectionMatrixOrtho,
 //                surfaceTexture.getTextureID(),
 //                surfaceDepthTexture.getTextureID(),
@@ -211,7 +211,7 @@
 ////            surfaceTexture.updateTexture()
 ////            surfaceDepthTexture.updateTexture()
 ////            fullscreenTextureShader.useProgram()
-////            fullscreenTextureShader.setUniforms(
+////            fullscreenTextureShader.setUniformsPass1(
 ////                projectionMatrixOrtho,
 ////                surfaceTexture.getTextureID(),
 ////                surfaceDepthTexture.getTextureID(),

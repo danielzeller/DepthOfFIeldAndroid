@@ -1,4 +1,4 @@
-package no.danielzeller.depthoffield.dof
+package no.danielzeller.depthoffield.dof.textureview
 
 import android.content.Context
 import android.graphics.*

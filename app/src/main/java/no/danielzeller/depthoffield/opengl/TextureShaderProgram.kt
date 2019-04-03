@@ -27,7 +27,7 @@ class TextureShaderProgram(vertexShaderResourceId: Int, fragmentShaderResourceId
 
     }
 
-    fun setUniforms(
+    fun setUniformsPass1(
         matrix: FloatArray,
         textureId: Int,
         depthTextureId: Int,
@@ -44,7 +44,7 @@ class TextureShaderProgram(vertexShaderResourceId: Int, fragmentShaderResourceId
         glActiveTexture(GLES30.GL_TEXTURE0 + 1)
         glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, depthTextureId)
 
-        glActiveTexture(GLES30.GL_TEXTURE0+2)
+        glActiveTexture(GLES30.GL_TEXTURE0 + 2)
         glBindTexture(GLES30.GL_TEXTURE_2D, blueNoiseTextureId)
 
         glUniform1i(uTextureUnitLocation, 0)
@@ -52,6 +52,7 @@ class TextureShaderProgram(vertexShaderResourceId: Int, fragmentShaderResourceId
         glUniform1i(glGetUniformLocation(program, "blue_noise"), 2)
         glUniform2f(uSizeLocation, w, h)
     }
+
     fun setUniformsPass2(matrix: FloatArray, textureId: Int, w: Float, h: Float) {
 
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
@@ -60,6 +61,25 @@ class TextureShaderProgram(vertexShaderResourceId: Int, fragmentShaderResourceId
         glUniform1i(glGetUniformLocation(program, "main_tex"), 0)
         glUniform2f(uSizeLocation, w, h)
     }
+
+
+    fun setUniformsHexPass2(
+        matrix: FloatArray,
+        textureId: Int,
+        w: Float,
+        h: Float,
+        dirX: Float,
+        dirY: Float
+    ) {
+
+        glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
+        glActiveTexture(GLES30.GL_TEXTURE0)
+        glBindTexture(GLES30.GL_TEXTURE_2D, textureId)
+        glUniform1i(glGetUniformLocation(program, "main_tex"), 0)
+        glUniform2f(uSizeLocation, w, h)
+        glUniform2f(glGetUniformLocation(program, "dir"), dirX, dirY)
+    }
+
 
     fun setUniformsPass3(matrix: FloatArray, textureId: Int, oroginalTextureId: Int, originalDepthId: Int) {
 
