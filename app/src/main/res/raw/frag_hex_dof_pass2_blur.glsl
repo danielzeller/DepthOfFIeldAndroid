@@ -20,9 +20,9 @@ void main()
 	vec2 uv = gl_FragCoord.xy / uPixelSize.xy;
     float dOriginal=texture2D(main_tex,uv).a;
     float dist = convertDepth(dOriginal );
-    float totalw = 0.0;
+    float totalw = 1.0;
 
-    vec4 color = vec4(0.0,0.0,0.0,0.0);
+    vec4 color = texture2D(main_tex,uv);
     for (int i=0; i<=16; i++){
         vec2 p = uv;
         float fi = float(i-8)/8.0;

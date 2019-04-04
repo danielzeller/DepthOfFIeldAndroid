@@ -199,7 +199,8 @@ class TextureViewRenderer(val context: Context) : TextureView.SurfaceTextureList
                 projectionMatrixOrtho,
                 downsampledTexture.fboTex,
                 1f / (width.toFloat() * scale),
-                1f / (height.toFloat() * scale)
+                1f / (height.toFloat() * scale),
+                0
             )
             spriteMesh.bindData(pass2Blur)
             spriteMesh.draw()
