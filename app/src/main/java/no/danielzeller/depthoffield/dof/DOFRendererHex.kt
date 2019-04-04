@@ -1,4 +1,4 @@
-package no.danielzeller.blurbehindlib.renderers
+package no.danielzeller.depthoffield.dof
 
 import android.content.Context
 import android.graphics.Color
@@ -127,7 +127,7 @@ class DOFRendererHex(private val context: Context) : GLSurfaceView.Renderer {
         pass3FinalComposition.useProgram()
         pass3FinalComposition.setUniformsPass3(
             projectionMatrixOrtho,
-            downsampledTexture2.fboTex,
+            downsampledTexture.fboTex,
             surfaceTexture.getTextureID(),
             surfaceDepthTexture.getTextureID()
         )
@@ -141,7 +141,7 @@ class DOFRendererHex(private val context: Context) : GLSurfaceView.Renderer {
         pass2Blur(downsampledTexture2, downsampledTexture,0.02f*xScale, 0.02f)
         pass2Blur(downsampledTexture, downsampledTexture2,0.02f*xScale, -0.02f)
         pass2Blur(downsampledTexture2, downsampledTexture,0.00f, 0.02f)
-//        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*height.toFloat()/width.toFloat(), 0.00f)
+//        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*xScale, 0.00f)
 //        pass2Blur(downsampledTexture, downsampledTexture2,0.00f, 0.02f)
         pass3Composition()
     }

@@ -7,9 +7,6 @@ import android.util.AttributeSet
 import android.view.Choreographer
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import no.danielzeller.blurbehindlib.renderers.CommonRenderer2
-import no.danielzeller.blurbehindlib.renderers.DOFRenderer
-import no.danielzeller.blurbehindlib.renderers.GLSurfaceViewRenderer
 
 
 class DOFLayoutGaussTest : FrameLayout {

@@ -1,4 +1,4 @@
-package no.danielzeller.blurbehindlib.renderers
+package no.danielzeller.depthoffield.dof.gauss
 
 import android.content.Context
 import android.opengl.GLES11Ext

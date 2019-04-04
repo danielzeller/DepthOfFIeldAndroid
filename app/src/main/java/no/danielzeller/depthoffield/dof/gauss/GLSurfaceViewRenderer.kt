@@ -1,7 +1,8 @@
-package no.danielzeller.blurbehindlib.renderers
+package no.danielzeller.depthoffield.dof.gauss
 
 import android.opengl.GLES20.*
 import android.opengl.GLSurfaceView.Renderer
+import no.danielzeller.depthoffield.dof.gauss.CommonRenderer2
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 

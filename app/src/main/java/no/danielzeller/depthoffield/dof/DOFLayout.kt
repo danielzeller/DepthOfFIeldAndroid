@@ -8,8 +8,6 @@ import android.util.AttributeSet
 import android.view.Choreographer
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import no.danielzeller.blurbehindlib.renderers.DOFRenderer
-import no.danielzeller.blurbehindlib.renderers.DOFRendererHex
 
 class DOFLayout : FrameLayout {
 
