@@ -19,7 +19,7 @@ class DOFRendererHex(private val context: Context) : GLSurfaceView.Renderer {
 
     val surfaceTexture = ViewSurfaceTexture()
     val surfaceDepthTexture = ViewSurfaceTexture()
-    var scale = 0.4f
+    var scale = 0.5f
 
     private val projectionMatrixOrtho = FloatArray(16)
     private lateinit var spriteMesh: SpriteMesh
@@ -127,7 +127,7 @@ class DOFRendererHex(private val context: Context) : GLSurfaceView.Renderer {
         pass3FinalComposition.useProgram()
         pass3FinalComposition.setUniformsPass3(
             projectionMatrixOrtho,
-            downsampledTexture.fboTex,
+            downsampledTexture2.fboTex,
             surfaceTexture.getTextureID(),
             surfaceDepthTexture.getTextureID()
         )
@@ -138,12 +138,12 @@ class DOFRendererHex(private val context: Context) : GLSurfaceView.Renderer {
     private fun doRenderFrame() {
         pass1DownsampleAndDepth()
         val xScale=height.toFloat()/width.toFloat()
-        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*xScale, 0.02f)
-        pass2Blur(downsampledTexture, downsampledTexture2,0.02f*xScale, -0.02f)
-        pass2Blur(downsampledTexture2, downsampledTexture,0.00f, 0.02f)
+        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*xScale, -0.02f)
+        pass2Blur(downsampledTexture, downsampledTexture2,0.02f*xScale, 0.02f)
+      pass2Blur(downsampledTexture2, downsampledTexture,0.00f, 0.02f)
 //        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*xScale, 0.00f)
 //        pass2Blur(downsampledTexture, downsampledTexture2,0.00f, 0.02f)
-        pass3Composition()
+//        pass3Composition()
     }
 
     fun destroy() {

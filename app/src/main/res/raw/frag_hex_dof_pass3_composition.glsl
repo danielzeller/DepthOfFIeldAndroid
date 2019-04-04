@@ -21,8 +21,6 @@ void main()
     if((originalDepth.r>0.49 && originalDepth.r<0.51) ){
         blendMaount =0.0;
     }
-    downSampled.a=1.0;
-    original.a=1.0;
     gl_FragColor = mix(original,downSampled,   blendMaount );
 
 }

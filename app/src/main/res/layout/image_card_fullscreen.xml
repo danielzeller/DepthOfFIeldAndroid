@@ -8,6 +8,7 @@
     android:orientation="vertical"
     android:background="@drawable/corner_background">
 
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
@@ -30,4 +31,13 @@
             android:textColor="#FFFFFF"
             android:textStyle="bold"
     android:layout_marginBottom="50dp"/>
+    <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:id="@+id/view2"
+            android:background="#FFFFFF"
+            android:layout_marginTop="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

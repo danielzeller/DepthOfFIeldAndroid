@@ -23,16 +23,16 @@ void main()
     float totalw = 0.0;
 
     vec4 color = vec4(0.0,0.0,0.0,0.0);
-    for (int i=0; i<=20; i++){
+    for (int i=0; i<=16; i++){
         vec2 p = uv;
-        float fi = float(i-10)/10.0;
+        float fi = float(i-8)/8.0;
         p.xy+=dir*fi*dist;
 
         float w = weight(fi);
 
     	vec4 c = texture2D(main_tex,p);
     	float sampleDepth = convertDepth(c.a);
-        if (dOriginal>=c.a){
+        if (dOriginal>c.a){
             w*=max(.0,1.0-(dist-sampleDepth)/thresh);
         }
         color += c*w;
