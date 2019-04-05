@@ -19,13 +19,13 @@ void main()
     vec4 surfaceTextureColor = texture2D(surface_texture, textureCoordinates);
     vec4 depthTextureColor = texture2D(depth_texture, textureCoordinates);
 
-    float blendMaount= (abs(0.5- depthTextureColor.r)*2.0)*3.0;
+    float blendMaount=  (abs(0.5- depthTextureColor.r)*2.0);
 
     float blurRadius=30.0*blendMaount;
 
     vec3 result = vec3(0.0f, 0.0f, 0.0f);
 
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < 1; ++i)
     {
         vec2 blueNoiseRand;
         if (i == 0)
@@ -42,10 +42,10 @@ void main()
         vec2 cr = vec2(sin(r.x),cos(r.x))*sqrt(r.y);
 
 
-        vec3 color = texture2D(surface_texture, textureCoordinates+cr*(blurRadius/uPixelSize.xy)).rgb;
+        vec3 color = texture2D(surface_texture, textureCoordinates-cr*(blurRadius/uPixelSize.xy)).rgb;
         result = mix(result, color, 1.0 / float(i+1));
     }
 
-    gl_FragColor = vec4(result, 1.0f);
+    gl_FragColor = vec4(result, depthTextureColor.r);
 
 }

@@ -10,11 +10,12 @@ import no.danielzeller.depthoffield.opengl.RenderTexture
 import no.danielzeller.depthoffield.opengl.SpriteMesh
 import no.danielzeller.depthoffield.opengl.TextureShaderProgram
 import no.danielzeller.depthoffield.opengl.ViewSurfaceTexture
+import no.opengl.danielzeller.opengltesting.opengl.util.TextureHelper.loadTexture
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 
-class DOFRendererHex(private val context: Context) : DOFRenderer {
+class DOFRendererCircular(private val context: Context) : DOFRenderer {
 
     override val surfaceTexture = ViewSurfaceTexture()
     override val surfaceDepthTexture = ViewSurfaceTexture()
@@ -24,15 +25,17 @@ class DOFRendererHex(private val context: Context) : DOFRenderer {
     private lateinit var spriteMesh: SpriteMesh
 
     private val pass1DownsampleAndDepth = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_dof_pass1_downscale)
-    private val pass2Blur = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_hex_dof_pass2_blur)
-    private val pass3FinalComposition = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_hex_dof_pass3_composition)
+    private val pass2Blur = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_dof_pass2_blur)
+    private val pass3FinalComposition = TextureShaderProgram(R.raw.vertex_shader, R.raw.frag_dof_pass3_composition)
 
     private var downsampledTexture = RenderTexture()
-    private var downsampledTexture2 = RenderTexture()
+    private var downsampledTextureBlurred = RenderTexture()
 
     private var width = 0
     private var height = 0
+
     override var isCreated = false
+    private var blueNoiseTextureId = 0
 
     override fun onSurfaceCreated(glUnused: GL10, config: EGLConfig) {
         clearViewSurfaceTexture()
@@ -51,7 +54,6 @@ class DOFRendererHex(private val context: Context) : DOFRenderer {
         doRenderFrame()
     }
 
-
     private fun clearViewSurfaceTexture() {
         val canvas = surfaceTexture.beginDraw()
         canvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
@@ -66,7 +68,8 @@ class DOFRendererHex(private val context: Context) : DOFRenderer {
         surfaceTexture.createSurface(width, height)
         surfaceDepthTexture.createSurface(width, height)
         downsampledTexture.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
-        downsampledTexture2.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
+        downsampledTextureBlurred.initiateFrameBuffer((width * scale).toInt(), (height * scale).toInt())
+        blueNoiseTextureId = loadTexture(context, R.drawable.blue_noise)
     }
 
 
@@ -94,32 +97,27 @@ class DOFRendererHex(private val context: Context) : DOFRenderer {
             surfaceDepthTexture.getTextureID(),
             width.toFloat() * scale,
             height.toFloat() * scale,
-            0
+            blueNoiseTextureId
         )
         spriteMesh.bindData(pass1DownsampleAndDepth)
         spriteMesh.draw()
         downsampledTexture.unbindRenderTexture()
     }
 
-    private fun pass2Blur(
-        drawToTexture: RenderTexture,
-        readFromTexture: RenderTexture,
-        dirX: Float,
-        dirY: Float
-    ) {
+    private fun pass2Blur() {
         setupViewPort((width.toFloat() * scale).toInt(), (height.toFloat() * scale).toInt())
-        drawToTexture.bindRenderTexture()
+        downsampledTextureBlurred.bindRenderTexture()
         pass2Blur.useProgram()
-        pass2Blur.setUniformsHexPass2(
+        pass2Blur.setUniformsPass2(
             projectionMatrixOrtho,
-            readFromTexture.fboTex,
-            (width.toFloat() * scale),
-            (height.toFloat() * scale),
-            dirX, dirY
+            downsampledTexture.fboTex,
+            1f / (width.toFloat() * scale),
+            1f / (height.toFloat() * scale),
+            blueNoiseTextureId
         )
         spriteMesh.bindData(pass2Blur)
         spriteMesh.draw()
-        drawToTexture.unbindRenderTexture()
+        downsampledTextureBlurred.unbindRenderTexture()
     }
 
     private fun pass3Composition() {
@@ -128,7 +126,7 @@ class DOFRendererHex(private val context: Context) : DOFRenderer {
         pass3FinalComposition.useProgram()
         pass3FinalComposition.setUniformsPass3(
             projectionMatrixOrtho,
-            downsampledTexture2.fboTex,
+            downsampledTextureBlurred.fboTex,
             surfaceTexture.getTextureID(),
             surfaceDepthTexture.getTextureID()
         )
@@ -138,17 +136,11 @@ class DOFRendererHex(private val context: Context) : DOFRenderer {
 
     private fun doRenderFrame() {
         pass1DownsampleAndDepth()
-        val xScale = height.toFloat() / width.toFloat()
-        pass2Blur(downsampledTexture2, downsampledTexture, 0.02f * xScale, -0.02f)
-        pass2Blur(downsampledTexture, downsampledTexture2, 0.02f * xScale, 0.02f)
-        pass2Blur(downsampledTexture2, downsampledTexture, 0.00f, 0.04f)
-//        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*xScale, 0.00f)
-//        pass2Blur(downsampledTexture, downsampledTexture2,0.00f, 0.02f)
+        pass2Blur()
         pass3Composition()
     }
 
     override fun destroy() {
         //TODO: delete resources
     }
-
 }

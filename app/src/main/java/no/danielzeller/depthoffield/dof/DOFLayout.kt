@@ -12,7 +12,7 @@ import android.widget.FrameLayout
 class DOFLayout : FrameLayout {
 
     private lateinit var surfaceView: GLSurfaceView
-    private lateinit var renderer: DOFRendererHex
+    private lateinit var renderer: DOFRenderer
 
     constructor(context: Context) : super(context) {
         setupView(context)
@@ -23,7 +23,7 @@ class DOFLayout : FrameLayout {
     }
 
     private fun setupView(context: Context) {
-        renderer = DOFRendererHex(context)
+        renderer = DOFRendererCircular(context)
 
         surfaceView = GLSurfaceView(context)
         surfaceView.setEGLContextClientVersion(2)
@@ -32,11 +32,10 @@ class DOFLayout : FrameLayout {
         surfaceView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
         addView(surfaceView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
 
-        Choreographer.getInstance().postFrameCallback(value)
-
+        Choreographer.getInstance().postFrameCallback(frameCallback)
     }
 
-    val value = object : Choreographer.FrameCallback {
+    val frameCallback = object : Choreographer.FrameCallback {
         override fun doFrame(frameTimeNanos: Long) {
             drawTextureView()
             Choreographer.getInstance().postFrameCallback(this)
@@ -45,7 +44,7 @@ class DOFLayout : FrameLayout {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        Choreographer.getInstance().removeFrameCallback(value)
+        Choreographer.getInstance().removeFrameCallback(frameCallback)
         renderer.destroy()
     }
 
@@ -60,7 +59,6 @@ class DOFLayout : FrameLayout {
                 drawChild(glCanvas, metaBallContainer, drawingTime)
             }
             renderer.surfaceTexture.endDraw(glCanvas)
-
 
             val glCanvasDepth = renderer.surfaceDepthTexture.beginDraw()
             glCanvasDepth?.drawColor(Color.WHITE)

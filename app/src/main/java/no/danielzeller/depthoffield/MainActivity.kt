@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.animation.PathInterpolatorCompat
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main3.*
 import no.danielzeller.depthoffield.animation.interpolate
 import no.danielzeller.depthoffield.animation.onUpdate
 
@@ -22,14 +22,14 @@ class MainActivity : AppCompatActivity() {
             child.clipToOutline = true
         }
 
-        ObjectAnimator.ofFloat(brawski, View.TRANSLATION_Y,0f,300f).setDuration(2000).start()
+        ObjectAnimator.ofFloat(brawski, View.TRANSLATION_Y, 0f, 300f).setDuration(2000).start()
         val scale = ObjectAnimator.ofFloat(brawski, View.TRANSLATION_Z, 0f, -1f).setDuration(1700)
-        scale.repeatCount=100
+        scale.repeatCount = 100
         scale.repeatMode = REVERSE
-        scale.interpolate(PathInterpolatorCompat.create(.88f,0f,.13f,.99f))
+        scale.interpolate(PathInterpolatorCompat.create(.88f, 0f, .13f, .99f))
         scale.onUpdate { value ->
-            brawski.scaleX = 1f+(value as Float)*0.5f
-            brawski.scaleY = 1f+(value as Float)*0.5f
+            brawski.scaleX = 1f + (value as Float) * 0.5f
+            brawski.scaleY = 1f + (value as Float) * 0.5f
         }
         scale.start()
     }
