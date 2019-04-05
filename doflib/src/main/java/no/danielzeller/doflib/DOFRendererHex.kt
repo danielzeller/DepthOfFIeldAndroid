@@ -133,13 +133,13 @@ class DOFRendererHex(private val context: Context, val scale: Float) : DOFRender
         spriteMesh.bindData(pass3FinalComposition)
         spriteMesh.draw()
     }
-
+    val blurRadius = 0.7f
     private fun doRenderFrame() {
         pass1DownsampleAndDepth()
         val xScale = height.toFloat() / width.toFloat()
-        pass2Blur(downsampledTexture2, downsampledTexture, 0.02f * xScale, -0.02f)
-        pass2Blur(downsampledTexture, downsampledTexture2, 0.02f * xScale, 0.02f)
-        pass2Blur(downsampledTexture2, downsampledTexture, 0.00f, 0.02f)
+        pass2Blur(downsampledTexture2, downsampledTexture, 0.02f * xScale*blurRadius, -0.02f*blurRadius)
+        pass2Blur(downsampledTexture, downsampledTexture2, 0.02f * xScale*blurRadius, 0.02f*blurRadius)
+        pass2Blur(downsampledTexture2, downsampledTexture, 0.00f*blurRadius, 0.02f*blurRadius)
 //        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*xScale, 0.00f)
 //        pass2Blur(downsampledTexture, downsampledTexture2,0.00f, 0.02f)
         pass3Composition()

@@ -91,7 +91,7 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
 
     private fun makeAHorribleMessThatOnlyICanRead() {
         val interpolator = PathInterpolatorCompat.create(.42f, 0f, .71f, .45f)
-        val interpolator2 = PathInterpolatorCompat.create(0f,1.06f,0f,1f)
+        val interpolator2 = PathInterpolatorCompat.create(0f,.95f,.39f,1f)
         val interpolator3 = PathInterpolatorCompat.create(.64f,.5f,1f,.93f)
         recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
