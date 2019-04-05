@@ -10,7 +10,7 @@
         tools:context=".SelectExampleActivity">
 
     <Button
-            android:text="Recyler View"
+            android:text="RecylerView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/button"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +26,7 @@
             android:onClick="launchFloatingImages"
     />
     <Button
-            android:text="Floating Debug"
+            android:text="RecyclerView 2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/button3"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"

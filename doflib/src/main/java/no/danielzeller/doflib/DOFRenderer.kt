@@ -1,4 +1,4 @@
-package no.danielzeller.depthoffield.dof
+package no.danielzeller.doflib
 
 import android.opengl.GLSurfaceView
 import no.danielzeller.depthoffield.opengl.ViewSurfaceTexture

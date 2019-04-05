@@ -15,7 +15,7 @@ import com.squareup.picasso.LruCache
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_recycler_view_example.*
 import kotlinx.android.synthetic.main.content_recycler_view_example.*
-import kotlinx.android.synthetic.main.image_card.view.*
+import kotlinx.android.synthetic.main.image_card_fullscreen.view.*
 
 
 private const val UNSPLASH_RANDOM_URL = "https://source.unsplash.com/1080x1080?"
@@ -100,7 +100,7 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
 
                     view?.apply {
                         val center = (recyclerView.parent as View).height * 0.6f
-                        val centerBottom = (recyclerView.parent as View).height* 0.7f
+                        val centerBottom =  (recyclerView.parent as View).height * 0.4f
                         if (view.bottom < center) {
                             val percentTilTop = view.bottom.toFloat() / center
                             val offsetAmount = center * 0.8f * interpolator.getInterpolation(1f - percentTilTop)
@@ -115,15 +115,14 @@ class RecyclerViewExampleActivity : AppCompatActivity() {
                             view.translationZ = -(1 - percentTilTop)
                             view.alpha = interpolator2.getInterpolation(percentTilTop)
                         } else if (view.top > centerBottom) {
-                            val percentTilBottom =
-                                1f - ((recyclerView.parent as View).height*1.3f - view.top.toFloat()) / ((recyclerView.parent as View).height*1.3f - centerBottom)
-                            val scale = 1f +interpolator3.getInterpolation(percentTilBottom) * 0.5f
+                            val percentTilBottom =   1f - ((recyclerView.parent as View).height - view.top.toFloat()) / ((recyclerView.parent as View).height- centerBottom)
+                            val scale = 1f +interpolator.getInterpolation(percentTilBottom) * 0.5f
                             view.scaleX = scale
                             view.scaleY = scale
                             view.pivotY = 0f
                             view.pivotX = view.width.toFloat() / 2f
-                            view.translationZ = Math.min(1f,interpolator3.getInterpolation( percentTilBottom*1.2f))
-                            view.translationY = -interpolator3.getInterpolation(percentTilBottom) *  (view.height*0.45f)
+                            view.translationZ = Math.min(1f,interpolator.getInterpolation( percentTilBottom))
+                            view.translationY = interpolator.getInterpolation(percentTilBottom) *  (view.height*0.1f)
 
                         } else {
                             view.translationY = 0f

@@ -1,4 +1,4 @@
-package no.danielzeller.depthoffield.dof
+package no.danielzeller.doflib
 
 
 import android.content.Context
@@ -9,21 +9,40 @@ import android.view.Choreographer
 import android.view.ViewGroup
 import android.widget.FrameLayout
 
+private const val HEX_BLUR = 0
+private const val CIRCULAR_BLUR = 1
+
 class DOFLayout : FrameLayout {
 
     private lateinit var surfaceView: GLSurfaceView
     private lateinit var renderer: DOFRenderer
+    private var scale = 0.4f
+    private var blurType = HEX_BLUR
+    private var backgroundFillColor = Color.BLACK
 
     constructor(context: Context) : super(context) {
         setupView(context)
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        loadAttributesFromXML(attrs)
         setupView(context)
     }
 
+    private fun loadAttributesFromXML(attrs: AttributeSet?) {
+
+        val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.DepthOfField, 0, 0)
+        try {
+            scale = typedArray.getFloat(R.styleable.DepthOfField_downSample, scale)
+            blurType = typedArray.getInteger(R.styleable.DepthOfField_burType, HEX_BLUR)
+            backgroundFillColor = typedArray.getColor(R.styleable.DepthOfField_backgroundFillColor, backgroundFillColor)
+        } finally {
+            typedArray.recycle()
+        }
+    }
+
     private fun setupView(context: Context) {
-        renderer = DOFRendererCircular(context)
+        renderer = createRenderer(context)
 
         surfaceView = GLSurfaceView(context)
         surfaceView.setEGLContextClientVersion(2)
@@ -33,6 +52,13 @@ class DOFLayout : FrameLayout {
         addView(surfaceView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
 
         Choreographer.getInstance().postFrameCallback(frameCallback)
+    }
+
+    private fun createRenderer(context: Context): DOFRenderer {
+        if (blurType == HEX_BLUR) {
+            return DOFRendererHex(context, scale)
+        }
+        return DOFRendererCircular(context, scale)
     }
 
     val frameCallback = object : Choreographer.FrameCallback {
@@ -52,7 +78,7 @@ class DOFLayout : FrameLayout {
         if (renderer.isCreated) {
 
             val glCanvas = renderer.surfaceTexture.beginDraw()
-            glCanvas?.drawColor(Color.parseColor("#000000"))
+            glCanvas?.drawColor(backgroundFillColor)
             if (glCanvas != null) {
                 val metaBallContainer = getChildAt(1) as ViewGroup
                 setRegPaint(metaBallContainer)

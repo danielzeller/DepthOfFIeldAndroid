@@ -14,10 +14,6 @@ class SelectExampleActivity : AppCompatActivity() {
         setContentView(R.layout.activity_select_example)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
     }
 
     fun launchRecycler(view: View) {
@@ -28,6 +24,6 @@ class SelectExampleActivity : AppCompatActivity() {
         startActivity( Intent(this, FloatingImagesActivity::class.java))
     }
     fun launchDebug(view: View) {
-        startActivity( Intent(this, MainActivity::class.java))
+
     }
 }

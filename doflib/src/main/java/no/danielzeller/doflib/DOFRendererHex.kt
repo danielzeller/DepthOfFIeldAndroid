@@ -1,11 +1,10 @@
-package no.danielzeller.depthoffield.dof
+package no.danielzeller.doflib
 
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.opengl.GLES20
 import android.opengl.Matrix
-import no.danielzeller.depthoffield.R
 import no.danielzeller.depthoffield.opengl.RenderTexture
 import no.danielzeller.depthoffield.opengl.SpriteMesh
 import no.danielzeller.depthoffield.opengl.TextureShaderProgram
@@ -14,11 +13,10 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 
-class DOFRendererHex(private val context: Context) : DOFRenderer {
+class DOFRendererHex(private val context: Context, val scale: Float) : DOFRenderer {
 
     override val surfaceTexture = ViewSurfaceTexture()
     override val surfaceDepthTexture = ViewSurfaceTexture()
-    var scale = 0.4f
 
     private val projectionMatrixOrtho = FloatArray(16)
     private lateinit var spriteMesh: SpriteMesh
@@ -141,7 +139,7 @@ class DOFRendererHex(private val context: Context) : DOFRenderer {
         val xScale = height.toFloat() / width.toFloat()
         pass2Blur(downsampledTexture2, downsampledTexture, 0.02f * xScale, -0.02f)
         pass2Blur(downsampledTexture, downsampledTexture2, 0.02f * xScale, 0.02f)
-        pass2Blur(downsampledTexture2, downsampledTexture, 0.00f, 0.04f)
+        pass2Blur(downsampledTexture2, downsampledTexture, 0.00f, 0.02f)
 //        pass2Blur(downsampledTexture2, downsampledTexture,0.02f*xScale, 0.00f)
 //        pass2Blur(downsampledTexture, downsampledTexture2,0.00f, 0.02f)
         pass3Composition()

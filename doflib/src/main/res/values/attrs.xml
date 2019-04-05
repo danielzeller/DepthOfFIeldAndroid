@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DepthOfField">
+
+        <attr name="downSample" format="float" />
+        <attr name="backgroundFillColor" format="color" />
+        <attr name="burType" format="enum">
+            <enum name="hexagon" value="0" />
+            <enum name="circular" value="1" />
+        </attr>
+
+    </declare-styleable>
+</resources>

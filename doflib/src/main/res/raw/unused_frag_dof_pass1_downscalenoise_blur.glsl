@@ -13,7 +13,7 @@ void main()
     vec2 textureCoordinates = v_TextureCoordinates;
     textureCoordinates.y = 1.0 - textureCoordinates.y;
     float scale = 512.0/uPixelSize.y*3.0;
-    vec2 uv = vec2(gl_FragCoord.x/uPixelSize.x *scale , gl_FragCoord.y/uPixelSize.x*scale);
+    vec2 uv = vec2(gl_FragCoord.x/uPixelSize.x *scale, gl_FragCoord.y/uPixelSize.x*scale);
     vec4 blueNoise = texture2D(blue_noise, uv);
 
     vec4 surfaceTextureColor = texture2D(surface_texture, textureCoordinates);
@@ -39,7 +39,7 @@ void main()
 
 
         // uniform sample the circle
-        vec2 cr = vec2(sin(r.x),cos(r.x))*sqrt(r.y);
+        vec2 cr = vec2(sin(r.x), cos(r.x))*sqrt(r.y);
 
 
         vec3 color = texture2D(surface_texture, textureCoordinates-cr*(blurRadius/uPixelSize.xy)).rgb;

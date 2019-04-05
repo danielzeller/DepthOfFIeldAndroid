@@ -11,12 +11,12 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.squareup.picasso.LruCache
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.image_card.view.*
+import kotlinx.android.synthetic.main.image_card_fullscreen.view.*
 import no.danielzeller.depthoffield.animation.BrownianMotion
 import no.danielzeller.depthoffield.animation.Vector3
 import no.danielzeller.depthoffield.animation.onUpdate
 import no.danielzeller.depthoffield.animation.start
-import no.danielzeller.depthoffield.dof.DOFLayout
+import no.danielzeller.doflib.DOFLayout
 import kotlin.random.Random
 
 private const val UNSPLASH_RANDOM_URL = "https://source.unsplash.com/960x540?"
