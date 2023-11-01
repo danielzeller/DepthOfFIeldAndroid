@@ -20,7 +20,4 @@ class SelectExampleActivity : AppCompatActivity() {
     fun launchFloatingImages(view: View) {
         startActivity( Intent(this, FloatingImagesActivity::class.java))
     }
-    fun launchDebug(view: View) {
-
-    }
 }
