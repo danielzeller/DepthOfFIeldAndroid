@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">DepthOfField</string>
+    <string name="title_activity_recycler_view_example">RecyclerViewExampleActivity</string>
+
+    <string-array name="image_search_term">
+        <item>design</item>
+        <item>city</item>
+        <item>human</item>
+        <item>drone</item>
+        <item>lights,city</item>
+        <item>photography,city,night</item>
+        <item>canal</item>
+        <item>coffee</item>
+        <item>iphone,desk,mobile</item>
+        <item>man</item>
+        <item>reputation</item>
+        <item>plant</item>
+        <item>style</item>
+    </string-array>
+    <string name="title_activity_select_example">SelectExampleActivity</string>
+</resources>
